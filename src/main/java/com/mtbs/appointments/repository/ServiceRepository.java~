@@ -1,4 +1,0 @@
-package com.mtbs.appointments.repository;
-
-public interface ServiceRepository {
-}
