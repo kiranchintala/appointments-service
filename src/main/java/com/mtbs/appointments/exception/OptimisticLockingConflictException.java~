@@ -1,0 +1,8 @@
+package com.mtbs.appointments.exception;
+
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
+
+public class OptimisticLockingConflictException extends Throwable {
+    public OptimisticLockingConflictException(String s, ObjectOptimisticLockingFailureException e) {
+    }
+}

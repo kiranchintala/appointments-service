@@ -1,0 +1,67 @@
+package com.mtbs.appointments.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Appointment {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private UUID id;
+
+    private String userId;
+
+    /**
+     * Defines the OneToMany relationship with the Service entity.
+     * 'mappedBy = "appointment"': Indicates that the 'appointment' field in the Service entity
+     * is the owning side of this bidirectional relationship. Hibernate will use this field
+     * to manage the foreign key relationship in the 'service' table.
+     * 'cascade = CascadeType.ALL': All persistence operations (persist, merge, remove, refresh, detach)
+     * performed on an Appointment entity will be cascaded to its associated Service entities.
+     * 'orphanRemoval = true': If a Service is removed from the 'services' collection of an Appointment,
+     * and it's no longer referenced by any other Appointment, it will be automatically deleted from the database.
+     */
+    @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ServiceModel> services = new ArrayList<>(); // Initialize to prevent NullPointerException
+
+    private LocalDateTime dateTime;
+    private Integer guests;
+    private String notes;
+    private String status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Double totalCost;
+
+    /**
+     * Helper method to add a Service to the appointment's list of services.
+     * It also sets the bidirectional link from the Service back to this Appointment.
+     *
+     * @param serviceModel The Service to add.
+     */
+    public void addService(ServiceModel serviceModel) {
+        services.add(serviceModel);
+        serviceModel.setAppointment(this);
+    }
+
+    /**
+     * Helper method to remove a Service from the appointment's list of services.
+     * It also clears the bidirectional link from the Service back to this Appointment.
+     *
+     * @param serviceModel The Service to remove.
+     */
+    public void removeService(ServiceModel serviceModel) {
+        services.remove(serviceModel);
+        serviceModel.setAppointment(null);
+    }
+
+}
+

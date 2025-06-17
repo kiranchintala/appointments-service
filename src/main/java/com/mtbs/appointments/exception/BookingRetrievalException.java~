@@ -1,0 +1,9 @@
+package com.mtbs.appointments.exception;
+
+public class BookingRetrievalException extends RuntimeException {
+
+    public BookingRetrievalException(String message) {
+        super(message);
+    }
+    
+}

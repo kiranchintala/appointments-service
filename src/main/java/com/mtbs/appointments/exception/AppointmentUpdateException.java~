@@ -1,0 +1,4 @@
+package com.mtbs.appointments.exception;
+
+public class AppointmentUpdateException extends Exception {
+}

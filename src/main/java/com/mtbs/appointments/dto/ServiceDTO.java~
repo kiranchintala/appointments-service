@@ -1,0 +1,4 @@
+package com.mtbs.appointments.dto;
+
+public class ServiceDTO {
+}

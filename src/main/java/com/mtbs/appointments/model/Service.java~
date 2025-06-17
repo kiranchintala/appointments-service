@@ -1,0 +1,32 @@
+package com.mtbs.appointments.model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Service{
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private double price;
+    private String description;
+
+    /**
+     * Defines the ManyToOne relationship with the Appointment entity.
+     * This 'appointment_id' column will be the foreign key in the 'service' table,
+     * linking each service back to its parent appointment.
+     * It's the owning side of the bidirectional relationship.
+     */
+    // Specifies the foreign key column name in the 'service' table
+    @ManyToOne
+    @JoinColumn(name = "appointment_id", insertable = false, updatable = false)
+    private Appointment appointment;
+}
