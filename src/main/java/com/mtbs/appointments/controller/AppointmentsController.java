@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/appointments")
+@RequestMapping("/api/v1/appointments")
 public class AppointmentsController {
 
     private final AppointmentsService appointmentsService;
