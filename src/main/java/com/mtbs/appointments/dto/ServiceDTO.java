@@ -7,18 +7,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class ServiceDTO {
 
-    @NotBlank(message = "Service name cannot be empty")
+    private UUID id;
     private String name;
-
-    @NotNull(message = "Service price cannot be null")
-    @PositiveOrZero(message = "Service price must be a non-negative value")
-    private Double price;
-
-    @NotBlank(message = "Service description cannot be empty")
     private String description;
+    private double price;
+    private int durationInMinutes;
 }

@@ -53,10 +53,7 @@ public class AppointmentsController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteAppointment(@PathVariable UUID id) throws AppointmentNotFoundException {
-        if (appointmentsService.deleteAppointment(id)) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        appointmentsService.deleteAppointment(id);
+        return ResponseEntity.noContent().build();
     }
 }

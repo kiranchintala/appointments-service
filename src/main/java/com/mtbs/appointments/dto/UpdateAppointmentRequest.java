@@ -1,26 +1,22 @@
 package com.mtbs.appointments.dto;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateAppointmentRequest {
 
-    private String userId;
-
-    @Size(min = 1, message = "At least one service is required if updating services")
-    @Valid
-    private List<ServiceDTO> services;
+    @NotEmpty(message = "At least one service ID must be provided")
+    private List<UUID> serviceIds;
 
     @FutureOrPresent(message = "Appointment date and time must be in the future or present")
     private LocalDateTime dateTime;
@@ -30,8 +26,7 @@ public class UpdateAppointmentRequest {
 
     private String notes;
 
+    @NotBlank
     private String status;
 
-    @PositiveOrZero(message = "Total cost must be a non-negative value")
-    private Double totalCost;
 }

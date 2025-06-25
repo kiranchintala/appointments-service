@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -17,21 +18,18 @@ public class CreateAppointmentRequest {
     @NotBlank(message = "User ID is mandatory")
     private String userId;
 
-    @NotNull(message = "Services list cannot be null")
-    @Size(min = 1, message = "At least one service is required")
-    @Valid // Ensures that each ServiceDTO object in the list is also validated
-    private List<ServiceDTO> services;
+    @NotEmpty(message = "At least one service ID must be provided")
+    private List<UUID> serviceIds;
 
     @NotNull(message = "Appointment date and time is required")
     @Future(message = "Appointment date and time must be in the future")
     private LocalDateTime dateTime;
 
     @PositiveOrZero(message = "Number of guests cannot be negative")
-    private int guests; // Assuming guests cannot be null, defaults to 0 if not provided by client
+    private int guests;
 
     private String notes;
 
-    @NotNull(message = "Total cost is required")
-    @PositiveOrZero(message = "Total cost must be a non-negative value")
-    private Double totalCost;
+    @NotBlank
+    private String status;
 }

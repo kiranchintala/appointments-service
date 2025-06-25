@@ -1,5 +1,6 @@
 package com.mtbs.appointments.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,7 +16,7 @@ import java.util.UUID;
 public class Appointment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     private String userId;
@@ -31,12 +32,15 @@ public class Appointment {
      * and it's no longer referenced by any other Appointment, it will be automatically deleted from the database.
      */
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ServiceModel> services = new ArrayList<>(); // Initialize to prevent NullPointerException
+    @JsonManagedReference
+    private List<ServiceModel> services = new ArrayList<>();
 
     private LocalDateTime dateTime;
     private Integer guests;
     private String notes;
     private String status;
+
+    @Column(updatable = false)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Double totalCost;
@@ -44,27 +48,18 @@ public class Appointment {
     @Version
     private Long version;
 
-    /**
-     * Helper method to add a Service to the appointment's list of services.
-     * It also sets the bidirectional link from the Service back to this Appointment.
-     *
-     * @param serviceModel The Service to add.
-     */
-    public void addService(ServiceModel serviceModel) {
-        services.add(serviceModel);
-        serviceModel.setAppointment(this);
+    public void addService(ServiceModel service) {
+        services.add(service);
+        service.setAppointment(this);
     }
 
-    /**
-     * Helper method to remove a Service from the appointment's list of services.
-     * It also clears the bidirectional link from the Service back to this Appointment.
-     *
-     * @param serviceModel The Service to remove.
-     */
-    public void removeService(ServiceModel serviceModel) {
-        services.remove(serviceModel);
-        serviceModel.setAppointment(null);
+    public void setServices(List<ServiceModel> services) {
+        this.services.clear();
+        if (services != null) {
+            services.forEach(this::addService);
+        }
     }
+
 
 }
 

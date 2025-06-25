@@ -15,7 +15,7 @@ public class AppointmentResponse {
 
     private UUID id;
     private String userId;
-    private List<ServiceDTO> services; // List of services
+    private List<ServiceDTO> services;
     private LocalDateTime dateTime; // Single date/time
     private Integer guests;
     private String notes;
@@ -23,4 +23,5 @@ public class AppointmentResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Double totalCost;
+    private long version;
 }
