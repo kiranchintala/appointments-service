@@ -10,7 +10,7 @@ public class WebSecurityConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**") // Apply CORS to all API endpoints
-                .allowedOrigins("http://localhost:3002", "http://localhost:3001") // Allow requests from your frontend origin
+                .allowedOrigins("http://localhost:3002", "http://localhost:3001", "http://localhost:3000") // Allow requests from your frontend origin
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allowed HTTP methods
                 .allowedHeaders("*") // Allow all headers
                 .allowCredentials(true);
