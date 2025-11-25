@@ -1,13 +1,7 @@
 package com.mtbs.appointments.service;
 
-import com.mtbs.appointments.dto.AppointmentResponse;
-import com.mtbs.appointments.dto.ServiceCatalogueResponse;
-import com.mtbs.appointments.dto.CreateAppointmentRequest;
-import com.mtbs.appointments.dto.UpdateAppointmentRequest;
-import com.mtbs.appointments.exception.AppointmentCreationException;
-import com.mtbs.appointments.exception.AppointmentNotFoundException;
-import com.mtbs.appointments.exception.AppointmentUpdateException;
-import com.mtbs.appointments.exception.ServiceUnavailableException;
+import com.mtbs.appointments.dto.*;
+import com.mtbs.appointments.exception.*;
 import com.mtbs.appointments.mapper.AppointmentMapper;
 import com.mtbs.appointments.model.Appointment;
 import com.mtbs.appointments.model.ServiceModel;
@@ -15,6 +9,7 @@ import com.mtbs.appointments.repository.AppointmentsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +17,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -170,4 +167,62 @@ public class AppointmentsServiceImpl implements AppointmentsService {
                     return Mono.error(ex);
                 });
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SlotsResponse getBookedSlots(LocalDate date) {
+
+        logger.info("Fetching booked slots for date: {}", date);
+        try {
+            List<Appointment> appointments =
+                    appointmentsRepository.findByDateTimeBetween(
+                            date.atStartOfDay(),
+                            date.plusDays(1).atStartOfDay()
+                    );
+            logger.info("Found {} appointment(s) on {}", appointments.size(), date);
+
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("HH:mm");
+            Set<String> booked = new HashSet<>();
+
+            for (Appointment appointment : appointments) {
+
+                LocalDateTime start = appointment.getDateTime();
+
+                int totalMinutes = appointment.getServices()
+                        .stream()
+                        .mapToInt(ServiceModel::getDurationInMinutes)
+                        .sum();
+
+                LocalDateTime end = start.plusMinutes(totalMinutes);
+                logger.debug(
+                        "Processing appointment {} — start: {}, duration: {} mins, end: {}",
+                        appointment.getId(), start, totalMinutes, end
+                );
+                LocalDateTime slot = start;
+
+                while (!slot.isAfter(end.minusMinutes(30))) {
+                    String slotString = slot.toLocalTime().format(fmt);
+                    booked.add(slotString);
+                    logger.debug("Marked booked slot: {}", slotString);
+                    slot = slot.plusMinutes(30);
+                }
+            }
+            List<String> sorted = booked.stream().sorted().toList();
+
+            logger.info(
+                    "Completed booked slot calculation for {} — total booked intervals: {}",
+                    date, sorted.size()
+            );
+
+            return new SlotsResponse(sorted);
+
+        } catch (DataAccessException dae) {
+            logger.error("Database error while retrieving booked slots for {}: {}", date, dae.getMessage(), dae);
+            throw new ServiceUnavailableException("Database error while retrieving booked slots.", dae);
+        } catch (Exception ex) {
+            logger.error("Unexpected error retrieving booked slots for {}: {}", date, ex.getMessage(), ex);
+            throw new AppointmentRetrievalException("Error retrieving booked slots for date " + date, ex);
+        }
+    }
+
 }

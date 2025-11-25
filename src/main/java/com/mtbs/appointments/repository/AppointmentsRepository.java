@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -17,4 +19,7 @@ public interface AppointmentsRepository extends JpaRepository<Appointment, UUID>
 
     @Query("SELECT DISTINCT a FROM Appointment a LEFT JOIN FETCH a.services")
     List<Appointment> findAllWithServices();
+
+    List<Appointment> findByDateTimeBetween(LocalDateTime start, LocalDateTime end);
+
 }

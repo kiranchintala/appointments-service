@@ -2,9 +2,11 @@ package com.mtbs.appointments.service;
 
 import com.mtbs.appointments.dto.AppointmentResponse;
 import com.mtbs.appointments.dto.CreateAppointmentRequest;
+import com.mtbs.appointments.dto.SlotsResponse;
 import com.mtbs.appointments.dto.UpdateAppointmentRequest;
 import com.mtbs.appointments.model.Appointment;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -20,4 +22,6 @@ public interface AppointmentsService {
     AppointmentResponse updateAppointment(UUID id, UpdateAppointmentRequest updatedRequest);
 
     void deleteAppointment(UUID id);
+
+    SlotsResponse getBookedSlots(LocalDate date);
 }

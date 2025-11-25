@@ -2,15 +2,19 @@ package com.mtbs.appointments.controller;
 
 import com.mtbs.appointments.dto.AppointmentResponse;
 import com.mtbs.appointments.dto.CreateAppointmentRequest;
+import com.mtbs.appointments.dto.SlotsResponse;
 import com.mtbs.appointments.dto.UpdateAppointmentRequest;
 import com.mtbs.appointments.exception.AppointmentNotFoundException;
 import com.mtbs.appointments.service.AppointmentsService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -56,4 +60,18 @@ public class AppointmentsController {
         appointmentsService.deleteAppointment(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/slots")
+    public ResponseEntity<SlotsResponse> getBookedSlots(
+            @RequestParam("date")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @NotNull(message = "Date is required")
+            LocalDate date) {
+
+        SlotsResponse response = appointmentsService.getBookedSlots(date);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
+
 }
